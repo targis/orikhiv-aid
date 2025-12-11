@@ -20,7 +20,7 @@ import format from 'date-fns/format'
 import { hubAction } from 'api'
 import * as yup from 'yup'
 import { parseDateString } from 'helpers/date'
-import { cities } from 'helpers/toponyms'
+import { cities_hromada } from 'helpers/toponyms'
 
 //TEST
 // import StormTest from './StormTest'
@@ -383,7 +383,7 @@ const QueueForm = () => {
                     <SelectInput
                       name="city"
                       label="Звідки виїхали"
-                      options={cities}
+                      options={cities_hromada}
                     />
 
                     <CheckField

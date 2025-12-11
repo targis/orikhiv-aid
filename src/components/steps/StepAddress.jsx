@@ -3,7 +3,7 @@ import SelectInput from 'components/inputs/SelectInput'
 import TextInput from 'components/inputs/TextInput'
 import StreetField from 'components/inputs/StreetField'
 import { Grid } from '@mui/material'
-import { streets, cities } from 'helpers/toponyms'
+import { streets, cities_hromada } from 'helpers/toponyms'
 
 import * as yup from 'yup'
 
@@ -20,7 +20,7 @@ const StepAddress = () => {
       <SelectInput
         name="city"
         label="Населений пункт"
-        options={cities}
+        options={cities_hromada}
         fullWidth
       />
 

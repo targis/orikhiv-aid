@@ -10,6 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import TextInput from 'components/inputs/TextInput'
 import MaskedTextField from 'components/inputs/MaskedTextField'
 import SelectInput from 'components/inputs/SelectInput'
+import AutocompleteField from 'components/inputs/AutocompliteField'
 import FamilyFormSubtitle from 'components/family/FamilyFormSubtitle'
 import CheckField from 'components/inputs/CheckField'
 import * as yup from 'yup'
@@ -18,7 +19,7 @@ import { add } from 'date-fns'
 import ScrollToError from 'components/ScrollToError'
 import ErrorMessage from './ErrorMessage'
 import StreetField from 'components/inputs/StreetField'
-import { streets, cities } from 'helpers/toponyms'
+import { streets, cities_hromada, vpo_cities, vpo_streets } from 'helpers/toponyms'
 import isBefore from 'date-fns/isBefore'
 import { action } from 'api'
 import Divider from '@mui/material/Divider'
@@ -38,7 +39,7 @@ const initialValues = {
   tel: '',
   address_city: '',
   address_street: null,
-  address_numbrer: '',
+  address_number: '',
   address_corpus: '',
   address_room: '',
   vpo_address: '',
@@ -58,7 +59,15 @@ const initialValues = {
   is_pensioner: false,
   is_householder: false,
   need_call: false,
-  notes: ''
+  notes: '',
+
+  vpo_city: '',
+  vpo_street: '',
+  vpo_bud: '',
+  vpo_corp: '',
+  vpo_apartment: '',
+
+
 }
 
 const disabilityOptions = [
@@ -217,25 +226,29 @@ const validationSchema = yup.object().shape({
       .required("Це поле обов'язкове, коли стоїть відмітка \"Інвалідність внаслідок війни\"")
       : passSchema
     ),
+  vpo_city: yup.string().required("Це поле обов'язкове"),
+  vpo_street: yup.string().required("Це поле обов'язкове"),
+  vpo_bud: yup.number().required("Це поле обов'язкове").min(1, 'Мінімальне значення - 1'),
+  vpo_apartment: yup.number().min(1, 'Мінімальне значення - 1'),
 })
 
-const testVals = {
-  ...initialValues,
-  last_name: 'lastNameTest',
-  first_name: 'firstNameTest',
-  middle_name: 'middleNameTest',
-  born: '10.10.2001',
-  tax_number: '',
-  document: '012345678',
-  tel: '06612312312',
-  // socialStatus: 'відсутній',
-  address_city: 'с.Копані',
-  address_street: 'streetTest1',
-  address_numbrer: '123',
-  vpo_address: 'factAddressTest1',
-  vpo_number: '1234-1234567890',
-  vpo_date: '25.03.2022'
-}
+// const testVals = {
+//   ...initialValues,
+//   last_name: 'lastNameTest',
+//   first_name: 'firstNameTest',
+//   middle_name: 'middleNameTest',
+//   born: '10.10.2001',
+//   tax_number: '',
+//   document: '012345678',
+//   tel: '06612312312',
+//   // socialStatus: 'відсутній',
+//   address_city: 'с.Копані',
+//   address_street: 'streetTest1',
+//   address_numbrer: '123',
+//   vpo_address: 'factAddressTest1',
+//   vpo_number: '1234-1234567890',
+//   vpo_date: '25.03.2022'
+// }
 
 const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeAction, family, fields }) => {
 
@@ -381,7 +394,7 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
                 <SelectInput
                   name="address_city"
                   label="Населений пункт"
-                  options={cities}
+                  options={cities_hromada}
                   fullWidth
                   disabled={isValidating}
                 />
@@ -393,7 +406,7 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
 
 
               <Grid item xs={12} sm={4}>
-                <TextInput name="address_numbrer" label="Номер будинку" type="number" disabled={isValidating} />
+                <TextInput name="address_number" label="Номер будинку" type="number" disabled={isValidating} />
               </Grid>
               <Grid item xs={12} sm={4}>
                 <TextInput name="address_corpus" label="Корпус" disabled={isValidating} />
@@ -403,22 +416,9 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
               </Grid>
             </Grid>
 
-            <FamilyFormSubtitle>Дані ВПО</FamilyFormSubtitle>
+            <FamilyFormSubtitle>Довідка ВПО</FamilyFormSubtitle>
 
             <Grid container columnSpacing={2} columns={12}>
-              <Grid item xs={12} sm={9} md={10}>
-                <TextInput
-                  name="vpo_address"
-                  label="Фактичне місце проживання згідно довідки ВПО"
-                  helperText="наприклад, м.Запоріжжя, вул.Перемоги, 1"
-                  fullWidth
-                  disabled={isValidating}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={3} md={2}>
-                <CheckField name="in_hostel" label="МТП" disabled={isValidating}></CheckField>
-              </Grid>
 
               <Grid item xs={12} sm={7}>
                 <MaskedTextField
@@ -446,6 +446,52 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
                   disabled={isValidating}
                 />
               </Grid>
+            </Grid>
+
+
+            <FamilyFormSubtitle>Фактична адреса проживання ВПО</FamilyFormSubtitle>
+            <Grid container columnSpacing={2} columns={12}>
+
+              <Grid item xs={12} sm={5}>
+                <AutocompleteField
+                  name="vpo_city"
+                  label="Населений пункт"
+                  options={vpo_cities}
+                  fullWidth
+                  disabled={isValidating}
+                  freeSolo
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={7} sx={{ textAlign: 'left' }}>
+                <AutocompleteField name="vpo_street" label="Вулиця" options={vpo_streets} disabled={isValidating} />
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <TextInput name="vpo_number" label="Номер будинку" type="number" disabled={isValidating} />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextInput name="vpo_corpus" label="Корпус" disabled={isValidating} />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextInput name="vpo_room" label="Квартира" type="number" disabled={isValidating} />
+              </Grid>
+              {/* 
+              <Grid item xs={12} sm={9} md={10}>
+                <TextInput
+                  name="vpo_address"
+                  label="Фактичне місце проживання згідно довідки ВПО"
+                  helperText="наприклад, м.Запоріжжя, вул.Перемоги, 1"
+                  fullWidth
+                  disabled={isValidating}
+                />
+              </Grid> */}
+
+              <Grid item xs={12} sm={3} md={2}>
+                <CheckField name="in_hostel" label="МТП" disabled={isValidating}></CheckField>
+              </Grid>
+
+
             </Grid>
 
             <FamilyFormSubtitle>Додаткова інформація</FamilyFormSubtitle>
