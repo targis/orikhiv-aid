@@ -28,7 +28,7 @@ import Divider from '@mui/material/Divider'
 //   await new Promise(resolve => setTimeout(resolve, stallTime));
 // }
 
-const initialValues = {
+let initialValues = {
   id: 1,
   last_name: '',
   first_name: '',
@@ -42,7 +42,7 @@ const initialValues = {
   address_number: '',
   address_corpus: '',
   address_room: '',
-  vpo_address: '',
+  // vpo_address: '',
   vpo_number: '',
   vpo_date: '',
   in_hostel: false,
@@ -61,7 +61,7 @@ const initialValues = {
   need_call: false,
   notes: '',
 
-  vpo_city: '',
+  vpo_city: 'м. Запоріжжя',
   vpo_street: '',
   vpo_bud: '',
   vpo_corp: '',
@@ -195,12 +195,12 @@ const validationSchema = yup.object().shape({
     ),
   address_city: yup.string().required("Це поле обов'язкове"),
   address_street: yup.string().required("Це поле обов'язкове"),
-  address_numbrer: yup.number().required("Це поле обов'язкове").min(1, 'Мінімальне значення - 1'),
+  address_number: yup.number().required("Це поле обов'язкове").min(1, 'Мінімальне значення - 1'),
   address_room: yup.number().min(1, 'Мінімальне значення - 1'),
-  vpo_address: yup
-    .string()
-    .required("Це поле обов'язкове")
-    .min(8, 'Введіть повну адресу (місто, вулиця, номер буд./кв.'),
+  // vpo_address: yup
+  //   .string()
+  //   .required("Це поле обов'язкове")
+  //   .min(8, 'Введіть повну адресу (місто, вулиця, номер буд./кв.'),
   vpo_number: yup
     .string()
     .required("Це поле обов'язкове")
@@ -254,7 +254,27 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
 
   const [checkingErrors, setCheckingErrors] = useState(null)
 
+  // const [person, setPerson] = useState(personValues ? { ...personValues } : { ...initialValues, is_householder: isHouseholder })
+
   const handleClose = closeAction || (() => { console.log('close') })
+
+  initialValues = personValues
+    ? { ...personValues }
+    : { ...initialValues, is_householder: isHouseholder }
+
+  /** provide initial data from householder to avoid user adding the same data 
+   *  multiple times
+  */
+  if (!isHouseholder) {
+    initialValues = {
+      ...initialValues,
+      vpo_city: family[0].vpo_city,
+      vpo_street: family[0].vpo_street,
+      vpo_bud: family[0].vpo_bud,
+      vpo_corp: family[0].vpo_corp,
+      vpo_apartment: family[0].vpo_apartment,
+    }
+  }
 
   return (
     <Box maxWidth={"md"} sx={{ ml: 'auto', mr: 'auto' }}>
@@ -263,22 +283,44 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
       </Typography>
 
       <Formik
-        initialValues={personValues ? { ...personValues } : { ...initialValues, is_householder: isHouseholder }}
+        initialValues={initialValues}
         validationSchema={validationSchema}
         validateOnBlur={false}
         validateOnChange={false}
-        onSubmit={(values) => {
-          const errs = submitAction(values)
-          if (errs) {
-            setCheckingErrors(errs)
-          } else {
-            setCheckingErrors(null)
-            handleClose()
+        onSubmit={async (values) => {
+          console.log(2323)
+          try {
+            const errs = await submitAction(values)
+            console.log(1)
+            if (errs) {
+              setCheckingErrors(errs)
+              console.log(2)
+            } else {
+              setCheckingErrors(null)
+              handleClose()
+              console.log(3)
+            }
+          } catch (e) {
+            console.log(e)
+            console.log(4)
           }
-        }}
+          //   const errs = await submitAction(values)
+
+          //   if (errs) {
+          //     console.log(errs)
+          //     setCheckingErrors(errs)
+          //     console.log(2)
+          //   } else {
+          //     setCheckingErrors(null)
+          //     handleClose()
+          //     console.log(3)
+          //   }
+          console.log(4)
+        }
+        }
       >
 
-        {({ values, handleSubmit, isSubmitting, resetForm, isValidating, isValid, errors }) => (
+        {({ values, handleSubmit, isSubmitting, resetForm, isValidating, isValid, errors, setFieldValue }) => (
 
           <Form autoComplete="off">
             {fields}
@@ -358,6 +400,10 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
                   }}
                   fullWidth
                   disabled={isValidating}
+                  onChange={(e) => {
+                    // const { document, value } = e.target.value;
+                    setFieldValue("document", e.target.value.toUpperCase());
+                  }}
                 />
               </Grid>
 
@@ -464,17 +510,17 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
               </Grid>
 
               <Grid item xs={12} sm={7} sx={{ textAlign: 'left' }}>
-                <AutocompleteField name="vpo_street" label="Вулиця" options={vpo_streets} disabled={isValidating} />
+                <AutocompleteField name="vpo_street" label="Вулиця" options={vpo_streets} disabled={isValidating} freeSolo />
               </Grid>
 
               <Grid item xs={12} sm={4}>
-                <TextInput name="vpo_number" label="Номер будинку" type="number" disabled={isValidating} />
+                <TextInput name="vpo_bud" label="Номер будинку" type="number" disabled={isValidating} />
               </Grid>
               <Grid item xs={12} sm={4}>
-                <TextInput name="vpo_corpus" label="Корпус" disabled={isValidating} />
+                <TextInput name="vpo_corp" label="Корпус" disabled={isValidating} />
               </Grid>
               <Grid item xs={12} sm={4}>
-                <TextInput name="vpo_room" label="Квартира" type="number" disabled={isValidating} />
+                <TextInput name="vpo_apartment" label="Квартира" type="number" disabled={isValidating} />
               </Grid>
               {/* 
               <Grid item xs={12} sm={9} md={10}>
@@ -569,7 +615,7 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
                 size="large"
                 type="submit"
                 sx={{ mr: 3 }}
-                onClick={handleSubmit}
+                // onClick={handleSubmit}
                 startIcon={isValidating ? <CircularProgress size="1rem" /> : null}
                 disabled={isValidating}
               >
