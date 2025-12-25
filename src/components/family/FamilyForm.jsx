@@ -269,7 +269,7 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
   /** provide initial data from householder to avoid user adding the same data 
    *  multiple times
   */
-  if (!isHouseholder && !personValues) {
+  if (family && family[0] && family[0].address_city && !isHouseholder && !personValues) {
     initialValues = {
       ...initialValues,
       address_city: family[0].address_city,
