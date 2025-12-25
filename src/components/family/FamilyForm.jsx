@@ -272,6 +272,11 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
   if (!isHouseholder && !personValues) {
     initialValues = {
       ...initialValues,
+      address_city: family[0].address_city,
+      address_street: family[0].address_street,
+      address_number: family[0].address_number,
+      address_corpus: family[0].address_corpus,
+      address_room: family[0].address_room,
       vpo_city: family[0].vpo_city,
       vpo_street: family[0].vpo_street,
       vpo_bud: family[0].vpo_bud,
