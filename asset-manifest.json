@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/orikhiv-aid/static/css/main.86e971b3.css",
-    "main.js": "/orikhiv-aid/static/js/main.b6e3c68a.js",
+    "main.js": "/orikhiv-aid/static/js/main.e539278c.js",
     "static/media/hero-image.svg": "/orikhiv-aid/static/media/hero-image.e1c19a002509dddec07bbf21986add44.svg",
     "static/media/roboto-all-500-normal.woff": "/orikhiv-aid/static/media/roboto-all-500-normal.0ab669b7a0d19b178f57.woff",
     "static/media/roboto-all-700-normal.woff": "/orikhiv-aid/static/media/roboto-all-700-normal.a457fde362a540fcadff.woff",
@@ -37,10 +37,10 @@
     "static/media/roboto-greek-ext-700-normal.woff2": "/orikhiv-aid/static/media/roboto-greek-ext-700-normal.bd9854c751441ccc1a70.woff2",
     "index.html": "/orikhiv-aid/index.html",
     "main.86e971b3.css.map": "/orikhiv-aid/static/css/main.86e971b3.css.map",
-    "main.b6e3c68a.js.map": "/orikhiv-aid/static/js/main.b6e3c68a.js.map"
+    "main.e539278c.js.map": "/orikhiv-aid/static/js/main.e539278c.js.map"
   },
   "entrypoints": [
     "static/css/main.86e971b3.css",
-    "static/js/main.b6e3c68a.js"
+    "static/js/main.e539278c.js"
   ]
 }
