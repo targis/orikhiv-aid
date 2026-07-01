@@ -7,6 +7,7 @@ import Box from '@mui/material/Box'
 // import MenuItem from '@mui/material/MenuItem'
 import InputAdornment from '@mui/material/InputAdornment'
 import CircularProgress from '@mui/material/CircularProgress'
+import CheckIcon from '@mui/icons-material/Check';
 import TextInput from 'components/inputs/TextInput'
 import MaskedTextField from 'components/inputs/MaskedTextField'
 import SelectInput from 'components/inputs/SelectInput'
@@ -28,7 +29,7 @@ import Divider from '@mui/material/Divider'
 //   await new Promise(resolve => setTimeout(resolve, stallTime));
 // }
 
-const initialValues = {
+let initialValues = {
   id: 1,
   last_name: '',
   first_name: '',
@@ -42,7 +43,7 @@ const initialValues = {
   address_number: '',
   address_corpus: '',
   address_room: '',
-  vpo_address: '',
+  // vpo_address: '',
   vpo_number: '',
   vpo_date: '',
   in_hostel: false,
@@ -61,13 +62,10 @@ const initialValues = {
   need_call: false,
   notes: '',
 
-  vpo_city: '',
+  vpo_city: 'м. Запоріжжя',
   vpo_street: '',
   vpo_bud: '',
-  vpo_corp: '',
   vpo_apartment: '',
-
-
 }
 
 const disabilityOptions = [
@@ -107,6 +105,9 @@ const phoneNumberRegex = /^0[0-9]{9}$/
 
 const innRegex = /^[0-9]{10}$/
 // /\(?([0-9]{3})\)?([0-9]{3})[-. ]?([0-9]{2})[-. ]?([0-9]{2})$/
+
+const vpoBudRegex =
+  /^[0-9]{1,4}([/][0-9]{1,4})?([а-яА-ЯіїєІЇЄ])?$/
 
 async function validateValue(name, value) {
   try {
@@ -195,12 +196,12 @@ const validationSchema = yup.object().shape({
     ),
   address_city: yup.string().required("Це поле обов'язкове"),
   address_street: yup.string().required("Це поле обов'язкове"),
-  address_numbrer: yup.number().required("Це поле обов'язкове").min(1, 'Мінімальне значення - 1'),
+  address_number: yup.number().required("Це поле обов'язкове").min(1, 'Мінімальне значення - 1'),
   address_room: yup.number().min(1, 'Мінімальне значення - 1'),
-  vpo_address: yup
-    .string()
-    .required("Це поле обов'язкове")
-    .min(8, 'Введіть повну адресу (місто, вулиця, номер буд./кв.'),
+  // vpo_address: yup
+  //   .string()
+  //   .required("Це поле обов'язкове")
+  //   .min(8, 'Введіть повну адресу (місто, вулиця, номер буд./кв.'),
   vpo_number: yup
     .string()
     .required("Це поле обов'язкове")
@@ -228,7 +229,10 @@ const validationSchema = yup.object().shape({
     ),
   vpo_city: yup.string().required("Це поле обов'язкове"),
   vpo_street: yup.string().required("Це поле обов'язкове"),
-  vpo_bud: yup.number().required("Це поле обов'язкове").min(1, 'Мінімальне значення - 1'),
+  vpo_bud: yup
+    .string()
+    .required("Це поле обов'язкове")
+    .matches(vpoBudRegex, 'Невірний формат (зразок: 123 або 123А)'),
   vpo_apartment: yup.number().min(1, 'Мінімальне значення - 1'),
 })
 
@@ -253,8 +257,48 @@ const validationSchema = yup.object().shape({
 const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeAction, family, fields }) => {
 
   const [checkingErrors, setCheckingErrors] = useState(null)
+  // const [docsChecked, setDocsChecked] = useState(false)
+  // const [docsValidating, setDocsValidating] = useState(false)
 
   const handleClose = closeAction || (() => { console.log('close') })
+
+  initialValues = personValues
+    ? { ...personValues }
+    : { ...initialValues, is_householder: isHouseholder }
+
+  /** provide initial data from householder to avoid user adding the same data 
+   *  multiple times
+  */
+  if (!isHouseholder && !personValues) {
+    initialValues = {
+      ...initialValues,
+      vpo_city: family[0].vpo_city,
+      vpo_street: family[0].vpo_street,
+      vpo_bud: family[0].vpo_bud,
+      vpo_corp: family[0].vpo_corp,
+      vpo_apartment: family[0].vpo_apartment,
+    }
+  }
+
+  // const validateDocsFields = async (values, setFieldError) => {
+  //   const fieldsToValidate = ['document', 'tax_number', 'vpo_number'];
+  //   let validated = 0
+  //   for (const field of fieldsToValidate) {
+  //     let res = ''
+  //     try {
+  //       setDocsValidating(true)
+  //       res = await validationSchema.validateAt(field, values);
+  //       validated += 1
+  //       console.log(res)
+  //     } catch (err) {
+  //       console.log(res)
+  //       setFieldError(field, err.message);
+  //     } finally {
+  //       setDocsValidating(false)
+  //     }
+  //   }
+  //   setDocsChecked(validated === fieldsToValidate.length)
+  // };
 
   return (
     <Box maxWidth={"md"} sx={{ ml: 'auto', mr: 'auto' }}>
@@ -263,22 +307,26 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
       </Typography>
 
       <Formik
-        initialValues={personValues ? { ...personValues } : { ...initialValues, is_householder: isHouseholder }}
+        initialValues={initialValues}
         validationSchema={validationSchema}
         validateOnBlur={false}
         validateOnChange={false}
-        onSubmit={(values) => {
-          const errs = submitAction(values)
-          if (errs) {
-            setCheckingErrors(errs)
-          } else {
-            setCheckingErrors(null)
-            handleClose()
+        onSubmit={async (values) => {
+          try {
+            const errs = await submitAction(values)
+            if (errs) {
+              setCheckingErrors(errs)
+            } else {
+              setCheckingErrors(null)
+              handleClose()
+            }
+          } catch (e) {
+            console.log(e)
           }
         }}
       >
 
-        {({ values, handleSubmit, isSubmitting, resetForm, isValidating, isValid, errors }) => (
+        {({ values, handleSubmit, isSubmitting, resetForm, isValidating, isValid, errors, setFieldValue, setFieldError }) => (
 
           <Form autoComplete="off">
             {fields}
@@ -358,6 +406,9 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
                   }}
                   fullWidth
                   disabled={isValidating}
+                  onChange={(e) => {
+                    setFieldValue("document", e.target.value.toUpperCase());
+                  }}
                 />
               </Grid>
 
@@ -386,8 +437,9 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
 
             </Grid>
 
-
             <FamilyFormSubtitle>Адреса реєстрації (прописка)</FamilyFormSubtitle>
+
+
 
             <Grid container columnSpacing={2} columns={12}>
               <Grid item xs={12} sm={5}>
@@ -409,7 +461,14 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
                 <TextInput name="address_number" label="Номер будинку" type="number" disabled={isValidating} />
               </Grid>
               <Grid item xs={12} sm={4}>
-                <TextInput name="address_corpus" label="Корпус" disabled={isValidating} />
+                <TextInput
+                  name="address_corpus"
+                  label="Корпус"
+                  disabled={isValidating}
+                  onChange={(e) => {
+                    setFieldValue("address_corpus", e.target.value.toUpperCase());
+                  }}
+                />
               </Grid>
               <Grid item xs={12} sm={4}>
                 <TextInput name="address_room" label="Квартира" type="number" disabled={isValidating} />
@@ -429,10 +488,17 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
                   formatResult={true}
                   mask="_"
                   type="tel"
+                  InputProps={{
+                    endAdornment: <InputAdornment position="start" disablePointerEvents={true}>
+                      {isValidating && (<CircularProgress size="1rem" />)}
+
+                    </InputAdornment>,
+                  }}
                   fullWidth
                   disabled={isValidating}
                 />
               </Grid>
+
               <Grid item xs={12} sm={5}>
                 <MaskedTextField
                   name="vpo_date"
@@ -446,8 +512,8 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
                   disabled={isValidating}
                 />
               </Grid>
-            </Grid>
 
+            </Grid>
 
             <FamilyFormSubtitle>Фактична адреса проживання ВПО</FamilyFormSubtitle>
             <Grid container columnSpacing={2} columns={12}>
@@ -464,17 +530,24 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
               </Grid>
 
               <Grid item xs={12} sm={7} sx={{ textAlign: 'left' }}>
-                <AutocompleteField name="vpo_street" label="Вулиця" options={vpo_streets} disabled={isValidating} />
+                <AutocompleteField name="vpo_street" label="Вулиця" options={vpo_streets} disabled={isValidating} freeSolo />
               </Grid>
 
-              <Grid item xs={12} sm={4}>
-                <TextInput name="vpo_number" label="Номер будинку" type="number" disabled={isValidating} />
+              <Grid item xs={12} sm={5}>
+                <TextInput
+                  name="vpo_bud"
+                  label="Номер будинку"
+                  disabled={isValidating}
+                  onChange={(e) => {
+                    setFieldValue("vpo_bud", e.target.value.toUpperCase());
+                  }}
+                />
               </Grid>
+              {/* <Grid item xs={12} sm={4}>
+                <TextInput name="vpo_corp" label="Корпус" disabled={isValidating} />
+              </Grid> */}
               <Grid item xs={12} sm={4}>
-                <TextInput name="vpo_corpus" label="Корпус" disabled={isValidating} />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextInput name="vpo_room" label="Квартира" type="number" disabled={isValidating} />
+                <TextInput name="vpo_apartment" label="Квартира" type="number" disabled={isValidating} />
               </Grid>
               {/* 
               <Grid item xs={12} sm={9} md={10}>
@@ -487,7 +560,7 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
                 />
               </Grid> */}
 
-              <Grid item xs={12} sm={3} md={2}>
+              <Grid item xs={12} sm={3}>
                 <CheckField name="in_hostel" label="МТП" disabled={isValidating}></CheckField>
               </Grid>
 
@@ -531,9 +604,9 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
 
             <Divider sx={{ mb: 3 }} />
 
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
               <CheckField name="has_qr" label="Наявність QR-коду" disabled={isValidating}></CheckField>
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12}>
               <CheckField name="is_pensioner" label="Пенсіонер, якому ще не виповнилось 60 років" disabled={isValidating}></CheckField>
@@ -569,12 +642,14 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
                 size="large"
                 type="submit"
                 sx={{ mr: 3 }}
-                onClick={handleSubmit}
+                // onClick={handleSubmit}
                 startIcon={isValidating ? <CircularProgress size="1rem" /> : null}
                 disabled={isValidating}
               >
                 {isValidating ? 'Валідація...' : 'Зберегти'}
               </Button>
+
+
             </Box>
             <ScrollToError />
           </Form>

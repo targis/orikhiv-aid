@@ -4,7 +4,7 @@ import { PatternFormat } from 'react-number-format'
 
 const PersonDetails = ({ values }) => {
 
-  const { last_name, first_name, middle_name, born, tax_number, document, tel, address_city, address_street, address_numbrer, address_corpus, address_room, vpo_address, vpo_number, vpo_date, has_qr, disability_group, has_disease, is_soldier_family, is_poor, is_single, is_householder, is_pensioner, notes, need_call, is_war_disability, fallen_hero_family, is_veteran, in_hostel } = values
+  const { last_name, first_name, middle_name, born, tax_number, document, tel, address_city, address_street, address_numbrer, address_corpus, address_room, vpo_number, vpo_date, has_qr, disability_group, has_disease, is_soldier_family, is_poor, is_single, is_householder, is_pensioner, notes, need_call, is_war_disability, fallen_hero_family, is_veteran, in_hostel, vpo_city, vpo_street, vpo_bud, vpo_apartment } = values
   const getStreet = () => {
     if (address_city === 'Оріхів') {
       const normalizedStreet = address_street.split(', ').reverse().join(' ')
@@ -16,6 +16,7 @@ const PersonDetails = ({ values }) => {
   const fullName = `${last_name} ${first_name} ${middle_name}`
   const fullAddress = `${address_city}, ${getStreet()}, ${address_numbrer}${address_corpus ? '-' + address_corpus : ''}${address_room ? ', кв. ' + address_room : ''}`
   const vpoDoc = `від ${vpo_date} № ${vpo_number}`
+  const vpo_address = `${vpo_city}, ${vpo_street}, буд. ${vpo_bud}${vpo_apartment ? ', кв. ' + vpo_apartment : ''}`
 
   // const disability = has_disability ? `✅ Так (${disability_group})` : '❌ Ні'
 
@@ -82,10 +83,10 @@ const PersonDetails = ({ values }) => {
       primary: 'Член родини загиблого військовослужбовця',
       secondary: fallen_hero_family ? '✅ Так' : '❌ Ні'
     },
-    {
-      primary: 'Наявність QR-коду',
-      secondary: has_qr ? '✅ Так' : '❌ Ні'
-    },
+    // {
+    //   primary: 'Наявність QR-коду',
+    //   secondary: has_qr ? '✅ Так' : '❌ Ні'
+    // },
     {
       primary: 'Пенсіонер, якому ще не виповнилось 60 років',
       secondary: is_pensioner ? '✅ Так' : '❌ Ні'

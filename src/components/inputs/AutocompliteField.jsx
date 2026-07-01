@@ -11,7 +11,16 @@ export default function AutocompleteField({ ...props }) {
       {...props}
       isOptionEqualToValue={(option, value) => option?.label === value}
       disablePortal
-      onChange={(_, value) => helpers.setValue(value?.label || '')}
+      onChange={(_, value) => {
+        if (typeof value === 'string') {
+          helpers.setValue(value);
+        } else if (value && value.label) {
+          helpers.setValue(value.label);
+        } else {
+          helpers.setValue('');
+        }
+      }}
+      onInputChange={(_, newInputValue) => helpers.setValue(newInputValue)}
       id={'combo-box-' + name}
       options={options}
       renderInput={(props) => (
