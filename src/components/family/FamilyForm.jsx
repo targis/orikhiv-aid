@@ -269,9 +269,14 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
   /** provide initial data from householder to avoid user adding the same data 
    *  multiple times
   */
-  if (!isHouseholder && !personValues && family[0]) {
+  if (family && family[0] && family[0].address_city && !isHouseholder && !personValues) {
     initialValues = {
       ...initialValues,
+      address_city: family[0].address_city,
+      address_street: family[0].address_street,
+      address_number: family[0].address_number,
+      address_corpus: family[0].address_corpus,
+      address_room: family[0].address_room,
       vpo_city: family[0].vpo_city,
       vpo_street: family[0].vpo_street,
       vpo_bud: family[0].vpo_bud,
