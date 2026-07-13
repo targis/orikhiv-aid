@@ -67,7 +67,7 @@ const FamilyCreate = ({ hasNumber }) => {
 
   const handleAddPerson = () => {
     FormSwal.fire({
-      html: <FamilyForm isHouseholder={isFamilyEmpty} submitAction={addPerson} closeAction={FormSwal.close} family={family} />,
+      html: <FamilyForm isHouseholder={isFamilyEmpty} personValues={null} submitAction={addPerson} closeAction={FormSwal.close} family={family} />,
       width: '650px',
       showConfirmButton: false,
       showCloseButton: true,

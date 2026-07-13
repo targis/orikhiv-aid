@@ -20,14 +20,14 @@ import { NavLink } from "react-router-dom";
 
 const drawerWidth = 240;
 const navItems = [
-  {
-    label: 'Реєстрація',
-    href: 'orikhiv-aid/register'
-  },
-  {
-    label: 'Нагадати номер',
-    href: 'orikhiv-aid/reminder'
-  }
+  // {
+  //   label: 'Реєстрація',
+  //   href: 'orikhiv-aid/register'
+  // },
+  // {
+  //   label: 'Нагадати номер',
+  //   href: 'orikhiv-aid/reminder'
+  // }
 ];
 
 function DrawerAppBar(props) {
