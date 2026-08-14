@@ -7,7 +7,7 @@ import Box from '@mui/material/Box'
 // import MenuItem from '@mui/material/MenuItem'
 import InputAdornment from '@mui/material/InputAdornment'
 import CircularProgress from '@mui/material/CircularProgress'
-import CheckIcon from '@mui/icons-material/Check';
+// import CheckIcon from '@mui/icons-material/Check';
 import TextInput from 'components/inputs/TextInput'
 import MaskedTextField from 'components/inputs/MaskedTextField'
 import SelectInput from 'components/inputs/SelectInput'
@@ -48,7 +48,7 @@ let initialValues = {
   vpo_date: '',
   in_hostel: false,
 
-  has_qr: false,
+  is_wck: false,
   disability_group: '',
   is_war_disability: false,
   has_disease: false,
@@ -609,9 +609,9 @@ const RegisterForm = ({ submitAction, isHouseholder, personValues = null, closeA
 
             <Divider sx={{ mb: 3 }} />
 
-            {/* <Grid item xs={12}>
-              <CheckField name="has_qr" label="Наявність QR-коду" disabled={isValidating}></CheckField>
-            </Grid> */}
+            <Grid item xs={12}>
+              <CheckField name="is_wck" label="Евакуйована особа (запрошувати на WCK)" disabled={isValidating}></CheckField>
+            </Grid>
 
             <Grid item xs={12}>
               <CheckField name="is_pensioner" label="Пенсіонер, якому ще не виповнилось 60 років" disabled={isValidating}></CheckField>
