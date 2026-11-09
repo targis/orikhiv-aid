@@ -4,7 +4,7 @@ const getActionURI = (keyString) =>
 // Aid registration key
 // const key = 'AKfycbyOrdI3vt7wOHg6V-ZmhQGgXfBJrBqLAcM9j4Yh0YGLSJVCo6wiLo0b3jplTUtXGZZ9'
 const key =
-  'AKfycby4zHlnVqFmLRfrC0-0aRk_300qKQrhbT-bvPIUkIJsKyVUXkOwb-jILKxYmsDWTBtQ'
+  'AKfycbyhHnf2COJ_wuhjO1oaQ3O5RYkKfysD_DjCxl_UQBwWZGWOZY10K6PylZJ4FEBLVEnP'
 // TEST KEY
 // const key =
 //   'AKfycbwk5OwCJ6x25C3gRObOIw23W8gYVhB6x7te3rUhjGNb5fl8MBu-EXvu__vU3ppYvHEcSA'
